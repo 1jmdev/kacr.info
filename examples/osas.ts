@@ -1,4 +1,4 @@
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 

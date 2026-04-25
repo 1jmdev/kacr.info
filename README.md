@@ -14,12 +14,15 @@ Read the code before relying on it for anything important.
 
 ```bash
 bun add kacr
+npm install kacr
+yarn add kacr
+pnpm add kacr
 ```
 
 ## Quick Start
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 
@@ -38,7 +41,7 @@ console.log(competition.name);
 Create a client:
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 ```
@@ -62,7 +65,7 @@ Available methods:
 ### Home
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 const home = await client.home();
@@ -76,7 +79,7 @@ console.log(home.newlyAddedCompetitions.map((competition) => competition.name));
 ### Competitions
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 
@@ -103,7 +106,7 @@ console.log(competition.runs);
 ### Details
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 
@@ -123,7 +126,7 @@ console.log(judge.name, judge.pagination);
 ### OSAs
 
 ```ts
-import { KacrClient } from "kacr";
+import { KacrClient } from "kacr-api";
 
 const client = new KacrClient();
 
@@ -142,7 +145,7 @@ if (byName.osas[0]) {
 ### Errors
 
 ```ts
-import { KacrClient, KacrError, NotFoundError, ParseError } from "kacr";
+import { KacrClient, KacrError, NotFoundError, ParseError } from "kacr-api";
 
 const client = new KacrClient({
     userAgent: "my-app/1.0",

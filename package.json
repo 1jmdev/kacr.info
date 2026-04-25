@@ -1,22 +1,50 @@
 {
-    "name": "kacr",
-    "module": "index.ts",
+    "name": "kacr-api",
+    "version": "0.1.1",
+    "description": "Typed client library for the public pages of kacr.info.",
+    "private": false,
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "sideEffects": false,
+    "engines": {
+        "node": ">=18"
+    },
     "devDependencies": {
         "@biomejs/biome": "^2.4.13",
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3"
     },
-    "peerDependencies": {
-        "typescript": "^5"
-    },
-    "private": true,
     "scripts": {
+        "build": "tsup src/index.ts --format esm --dts --clean --out-dir dist",
         "format": "biome format --write .",
         "check": "biome check .",
+        "pack:check": "npm pack --dry-run",
+        "prepublishOnly": "bun run build",
         "test": "bun test",
         "typecheck": "tsc --noEmit"
     },
-    "type": "module",
     "dependencies": {
         "cheerio": "^1.2.0"
+    },
+    "keywords": [
+        "kacr",
+        "agility",
+        "scraper",
+        "client"
+    ],
+    "publishConfig": {
+        "access": "public"
     }
 }

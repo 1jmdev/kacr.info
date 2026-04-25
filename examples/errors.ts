@@ -1,4 +1,4 @@
-import { KacrClient, KacrError, NotFoundError, ParseError } from "kacr";
+import { KacrClient, KacrError, NotFoundError, ParseError } from "kacr-api";
 
 const client = new KacrClient({
     userAgent: "kacr-example/1.0",
