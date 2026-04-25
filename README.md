@@ -1,4 +1,4 @@
-# `kacr`
+# `kacr.info client`
 
 Typed client library for the public parts of [`kacr.info`](https://kacr.info).
 
@@ -13,10 +13,10 @@ Read the code before relying on it for anything important.
 ## Install
 
 ```bash
-bun add kacr
-npm install kacr
-yarn add kacr
-pnpm add kacr
+bun add kacr-api
+npm install kacr-api
+yarn add kacr-api
+pnpm add kacr-api
 ```
 
 ## Quick Start

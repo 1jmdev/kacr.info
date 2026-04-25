@@ -1,6 +1,6 @@
 {
     "name": "kacr-api",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Typed client library for the public pages of kacr.info.",
     "private": false,
     "type": "module",
