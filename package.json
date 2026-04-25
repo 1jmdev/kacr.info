@@ -1,12 +1,17 @@
 {
-  "name": "kacr",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+    "name": "kacr",
+    "module": "index.ts",
+    "devDependencies": {
+        "@biomejs/biome": "^2.4.13",
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "private": true,
+    "scripts": {
+        "format": "biome format --write .",
+        "check": "biome check ."
+    },
+    "type": "module"
 }
