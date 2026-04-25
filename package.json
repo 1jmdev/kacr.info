@@ -11,7 +11,12 @@
     "private": true,
     "scripts": {
         "format": "biome format --write .",
-        "check": "biome check ."
+        "check": "biome check .",
+        "test": "bun test",
+        "typecheck": "tsc --noEmit"
     },
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "cheerio": "^1.2.0"
+    }
 }
