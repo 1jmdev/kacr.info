@@ -2,6 +2,17 @@ import { KacrError } from "../errors/KacrError.ts";
 import { NotFoundError } from "../errors/NotFoundError.ts";
 import { absoluteUrl } from "../utils/urls.ts";
 
+/**
+ * Options for the low-level HTTP client used by {@link KacrClient}.
+ *
+ * @example
+ * ```ts
+ * const http = new HttpClient({
+ *   userAgent: "my-app/1.0",
+ *   fetch: (input, init) => fetch(input, init),
+ * });
+ * ```
+ */
 export interface HttpClientOptions {
     baseUrl?: string;
     fetch?: (
@@ -11,6 +22,18 @@ export interface HttpClientOptions {
     userAgent?: string;
 }
 
+/**
+ * Small helper around `fetch` for constructing KACR URLs and returning HTML.
+ *
+ * Most consumers should use {@link KacrClient}. Use `HttpClient` directly only
+ * when you want raw HTML plus the resolved response URL.
+ *
+ * @example
+ * ```ts
+ * const http = new HttpClient();
+ * const { url, html } = await http.getHtml("/competitions/12345");
+ * ```
+ */
 export class HttpClient {
     readonly baseUrl: string;
     readonly fetchImpl: (
@@ -25,6 +48,17 @@ export class HttpClient {
         this.userAgent = options.userAgent;
     }
 
+    /**
+     * Builds an absolute KACR URL from a pathname and optional query object.
+     *
+     * Empty string values and `undefined` entries are omitted.
+     *
+     * @example
+     * ```ts
+     * const http = new HttpClient();
+     * const url = http.buildUrl("/competitions/search", { page: 2, type: "future" });
+     * ```
+     */
     buildUrl(
         pathname: string,
         query?: Record<string, string | number | undefined>,
@@ -40,6 +74,19 @@ export class HttpClient {
         return url.toString();
     }
 
+    /**
+     * Fetches a public KACR page and returns the final response URL together
+     * with the response body.
+     *
+     * Throws {@link NotFoundError} for `404` responses and {@link KacrError}
+     * for other failed or non-public responses.
+     *
+     * @example
+     * ```ts
+     * const http = new HttpClient();
+     * const { url, html } = await http.getHtml("/runs/67890");
+     * ```
+     */
     async getHtml(
         pathname: string,
         query?: Record<string, string | number | undefined>,

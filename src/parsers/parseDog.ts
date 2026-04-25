@@ -84,6 +84,15 @@ function parseGroupedResults(
     return groups;
 }
 
+/**
+ * Parses a dog page, including measurements, books, and grouped results.
+ *
+ * @example
+ * ```ts
+ * const dog = parseDog(html, "https://kacr.info/dogs/123");
+ * console.log(dog.measurements);
+ * ```
+ */
 export function parseDog(html: string, sourceUrl: string): Dog {
     const $ = loadHtml(html, sourceUrl);
     const summary = summaryMap($);

@@ -6,8 +6,10 @@ import { parseCompetitionList } from "../src/parsers/parseCompetitionList.ts";
 import { parseCompetitionSearch } from "../src/parsers/parseCompetitionSearch.ts";
 import { parseDog } from "../src/parsers/parseDog.ts";
 import { parseHandler } from "../src/parsers/parseHandler.ts";
+import { parseHome } from "../src/parsers/parseHome.ts";
 import { parseJudge, parseJudgeDirectory } from "../src/parsers/parseJudge.ts";
 import {
+    parseOsa,
     parseOsaSearchForm,
     parseOsaSearchResults,
 } from "../src/parsers/parseOsa.ts";
@@ -84,6 +86,16 @@ describe("parsers", () => {
         expect(book.handler?.id).toBe(4603);
         expect(book.dog?.id).toBe(9032);
         expect(book.results[0]?.items[0]?.rank).toBe(19);
+    });
+
+    it("parses the real home page sections", async () => {
+        const html = await readFixture("home.html");
+        const home = parseHome(html, "https://kacr.info/");
+
+        expect(home.todaysCompetitions[0]?.id).toBe(5644);
+        expect(home.upcomingCompetitions[0]?.id).toBe(5682);
+        expect(home.newlyAddedCompetitions[0]?.id).toBe(5706);
+        expect(home.memberCount).toBe(1267);
     });
 
     it("parses competition lists and search form", async () => {
@@ -175,5 +187,22 @@ describe("parsers", () => {
         expect(osaResults.handlers[0]?.handler.id).toBe(797);
         expect(osaResults.handlers[0]?.osa?.id).toBe(26);
         expect(globalResults.judges[0]?.judge.id).toBe(43);
+    });
+
+    it("parses OSA detail pages", async () => {
+        const html = await readFixture("osas-id.html");
+        const osa = parseOsa(html, "https://kacr.info/osas/30?page=1");
+
+        expect(osa.id).toBe(30);
+        expect(osa.name).toBe("Klub Aktij z.s.");
+        expect(osa.email).toBe("KlubAktij@seznam.cz");
+        expect(osa.memberCount).toBe(36);
+        expect(osa.address).toEqual({
+            street: "K Podlesaku 2",
+            city: "Praha",
+            country: "Česká republika",
+        });
+        expect(osa.members[0]?.id).toBe(8327);
+        expect(osa.pagination?.nextPage).toBe(2);
     });
 });

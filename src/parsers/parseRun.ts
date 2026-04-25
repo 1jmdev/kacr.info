@@ -50,6 +50,15 @@ function parseResultRow($: CheerioAPI, row: AnyNode): RunResult {
     };
 }
 
+/**
+ * Parses a single run detail page and its result table.
+ *
+ * @example
+ * ```ts
+ * const run = parseRun(html, "https://kacr.info/runs/67890");
+ * console.log(run.results[0]);
+ * ```
+ */
 export function parseRun(html: string, sourceUrl: string): Run {
     const $ = loadHtml(html, sourceUrl);
     const summary = summaryMap($);

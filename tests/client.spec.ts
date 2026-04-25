@@ -57,4 +57,34 @@ describe("KacrClient", () => {
         );
         expect(osas.handlers[3]?.handler.id).toBe(1764);
     });
+
+    it("parses home and OSA detail through the public client", async () => {
+        const homeHtml = await Bun.file(
+            new URL("../pageshtml/home.html", import.meta.url),
+        ).text();
+        const osaHtml = await Bun.file(
+            new URL("../pageshtml/osas-id.html", import.meta.url),
+        ).text();
+
+        const client = new KacrClient({
+            fetch: async (input) => {
+                const url = String(input);
+
+                if (url.endsWith("/")) {
+                    return createHtmlResponse(homeHtml);
+                }
+
+                return createHtmlResponse(osaHtml);
+            },
+        });
+
+        const home = await client.home();
+        const osa = await client.osas(30, { page: 1 });
+
+        expect(home.todaysCompetitions[0]?.id).toBe(5644);
+        expect(home.memberCount).toBe(1267);
+        expect(osa.name).toBe("Klub Aktij z.s.");
+        expect(osa.address?.city).toBe("Praha");
+        expect(osa.pagination?.nextPage).toBe(2);
+    });
 });

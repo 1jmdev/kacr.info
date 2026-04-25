@@ -20,9 +20,9 @@ import { parseOsa, parseOsaSearchResults } from "../parsers/parseOsa.ts";
 import { parseRun } from "../parsers/parseRun.ts";
 import { HttpClient, type HttpClientOptions } from "./HttpClient.ts";
 
-type FutureCompetitionsFn = ((options?: {
-    page?: number;
-}) => Promise<CompetitionListPage>) & {
+type FutureCompetitionsFn = {
+    (id: number): Promise<Competition>;
+    (options?: { page?: number }): Promise<CompetitionListPage>;
     search: (params: CompetitionSearchParams) => Promise<CompetitionListPage>;
 };
 
@@ -30,6 +30,19 @@ type OsaApiFn = ((id: number, options?: { page?: number }) => Promise<Osa>) & {
     search: (params: OsaSearchParams) => Promise<OsaSearchResults>;
 };
 
+/**
+ * High-level client for public `kacr.info` pages.
+ *
+ * The client returns parsed TypeScript objects instead of raw HTML.
+ *
+ * @example
+ * ```ts
+ * const client = new KacrClient();
+ * const competition = await client.competitions(12345);
+ * const future = await client.competitions({ page: 1 });
+ * const osas = await client.osas.search({ name: "Maro" });
+ * ```
+ */
 export class KacrClient {
     readonly http: HttpClient;
     readonly competitions: FutureCompetitionsFn;
@@ -56,11 +69,32 @@ export class KacrClient {
         this.osas = osas;
     }
 
+    /**
+     * Loads and parses the public homepage.
+     *
+     * @example
+     * ```ts
+     * const client = new KacrClient();
+     * const home = await client.home();
+     * console.log(home.upcomingCompetitions);
+     * ```
+     */
     async home(): Promise<HomeData> {
         const { url, html } = await this.http.getHtml("/");
         return parseHome(html, url);
     }
 
+    /**
+     * Loads the future competitions listing.
+     *
+     * This is the same data returned by calling `client.competitions()` with an
+     * options object instead of a numeric id.
+     *
+     * @example
+     * ```ts
+     * const page = await client.getFutureCompetitions({ page: 2 });
+     * ```
+     */
     async getFutureCompetitions(
         options: { page?: number } = {},
     ): Promise<CompetitionListPage> {
@@ -75,6 +109,18 @@ export class KacrClient {
         return parseCompetitionList(result.html, result.url);
     }
 
+    /**
+     * Searches competitions using the public competition search endpoint.
+     *
+     * @example
+     * ```ts
+     * const results = await client.searchCompetitions({
+     *   name: "Mistrovství",
+     *   from: "2026-01-01",
+     *   to: "2026-12-31",
+     * });
+     * ```
+     */
     async searchCompetitions(
         params: CompetitionSearchParams,
     ): Promise<CompetitionListPage> {
@@ -96,31 +142,59 @@ export class KacrClient {
         return parseCompetitionList(html, url);
     }
 
+    /**
+     * Loads a competition detail page by numeric id.
+     *
+     * @example
+     * ```ts
+     * const competition = await client.getCompetition(12345);
+     * ```
+     */
     async getCompetition(id: number): Promise<Competition> {
         const { url, html } = await this.http.getHtml(`/competitions/${id}`);
         return parseCompetition(html, url);
     }
 
+    /**
+     * Loads a run detail page by numeric id.
+     */
     async runs(id: number): Promise<Run> {
         const { url, html } = await this.http.getHtml(`/runs/${id}`);
         return parseRun(html, url);
     }
 
+    /**
+     * Loads a handler detail page by numeric id.
+     */
     async handlers(id: number): Promise<Handler> {
         const { url, html } = await this.http.getHtml(`/handlers/${id}`);
         return parseHandler(html, url);
     }
 
+    /**
+     * Loads a dog detail page by numeric id.
+     */
     async dogs(id: number): Promise<Dog> {
         const { url, html } = await this.http.getHtml(`/dogs/${id}`);
         return parseDog(html, url);
     }
 
+    /**
+     * Loads a book detail page by numeric id.
+     */
     async books(id: number): Promise<Book> {
         const { url, html } = await this.http.getHtml(`/books/${id}`);
         return parseBook(html, url);
     }
 
+    /**
+     * Loads a judge page, including paginated competition history when present.
+     *
+     * @example
+     * ```ts
+     * const judge = await client.judges(42, { page: 3 });
+     * ```
+     */
     async judges(id: number, options: { page?: number } = {}): Promise<Judge> {
         const { url, html } = await this.http.getHtml(`/judges/${id}`, {
             page: options.page,
@@ -128,6 +202,9 @@ export class KacrClient {
         return parseJudge(html, url);
     }
 
+    /**
+     * Loads an OSA detail page by numeric id.
+     */
     async getOsa(id: number, options: { page?: number } = {}): Promise<Osa> {
         const { url, html } = await this.http.getHtml(`/osas/${id}`, {
             page: options.page,
@@ -135,6 +212,17 @@ export class KacrClient {
         return parseOsa(html, url);
     }
 
+    /**
+     * Searches OSAs by name, member name, or location.
+     *
+     * Exactly one of `name`, `member`, or `location` should be provided.
+     *
+     * @example
+     * ```ts
+     * const byMember = await client.searchOsas({ member: "Maro" });
+     * const byName = await client.searchOsas({ name: "Brno" });
+     * ```
+     */
     async searchOsas(params: OsaSearchParams): Promise<OsaSearchResults> {
         const type = params.member
             ? "by_member"

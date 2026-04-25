@@ -69,6 +69,15 @@ function parseGroupedResults(
     return groups;
 }
 
+/**
+ * Parses a handler page, including books and grouped competition results.
+ *
+ * @example
+ * ```ts
+ * const handler = parseHandler(html, "https://kacr.info/handlers/123");
+ * console.log(handler.books);
+ * ```
+ */
 export function parseHandler(html: string, sourceUrl: string): Handler {
     const $ = loadHtml(html, sourceUrl);
     const summary = summaryMap($);

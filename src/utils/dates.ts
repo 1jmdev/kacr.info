@@ -4,6 +4,9 @@ function pad(value: string): string {
     return value.padStart(2, "0");
 }
 
+/**
+ * Parses a Czech-style date such as `1. 5. 2026` into `YYYY-MM-DD`.
+ */
 export function parseCzechDate(value: string | undefined): string | undefined {
     const text = cleanText(value);
     if (!text) {
@@ -26,6 +29,9 @@ export function parseCzechDate(value: string | undefined): string | undefined {
     return `${year}-${pad(month)}-${pad(day)}`;
 }
 
+/**
+ * Parses a date range into normalized `dateFrom` and `dateTo` values.
+ */
 export function parseDateRange(value: string | undefined): {
     dateFrom?: string;
     dateTo?: string;

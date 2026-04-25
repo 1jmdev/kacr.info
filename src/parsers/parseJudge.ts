@@ -5,6 +5,15 @@ import { parsePagination } from "../utils/pagination.ts";
 import { cleanText } from "../utils/text.ts";
 import { absoluteUrl, extractIdFromUrl } from "../utils/urls.ts";
 
+/**
+ * Parses a judge detail page and the competitions listed on that page.
+ *
+ * @example
+ * ```ts
+ * const judge = parseJudge(html, "https://kacr.info/judges/42?page=2");
+ * console.log(judge.pagination);
+ * ```
+ */
 export function parseJudge(html: string, sourceUrl: string): Judge {
     const $ = loadHtml(html, sourceUrl);
     const name = cleanText($("h1").first().text()) ?? "";
@@ -22,6 +31,15 @@ export function parseJudge(html: string, sourceUrl: string): Judge {
     };
 }
 
+/**
+ * Parses a judge directory page into lightweight judge entries plus pagination.
+ *
+ * @example
+ * ```ts
+ * const page = parseJudgeDirectory(html, "https://kacr.info/judges?page=3");
+ * console.log(page.items);
+ * ```
+ */
 export function parseJudgeDirectory(
     html: string,
     sourceUrl: string,

@@ -17,6 +17,14 @@ import { parsePagination } from "../utils/pagination.ts";
 import { cleanText, stripTrailingColon } from "../utils/text.ts";
 import { extractIdFromUrl } from "../utils/urls.ts";
 
+/**
+ * Parses the OSA search form definition.
+ *
+ * @example
+ * ```ts
+ * const form = parseOsaSearchForm(html, "https://kacr.info/osas/search");
+ * ```
+ */
 export function parseOsaSearchForm(
     html: string,
     sourceUrl: string,
@@ -25,6 +33,16 @@ export function parseOsaSearchForm(
     return parseDefinitionListForm($, "form.search", sourceUrl);
 }
 
+/**
+ * Parses an OSA search result page, including matching OSAs, handlers, and
+ * judges when those sections exist.
+ *
+ * @example
+ * ```ts
+ * const results = parseOsaSearchResults(html, "https://kacr.info/osas/search/by_name/brno");
+ * console.log(results.osas);
+ * ```
+ */
 export function parseOsaSearchResults(
     html: string,
     sourceUrl: string,
@@ -86,6 +104,18 @@ export function parseOsaSearchResults(
     };
 }
 
+/**
+ * Parses an OSA detail page.
+ *
+ * The current implementation is based on the public fixture coverage available
+ * in this repository, so treat fields as best-effort scraping output.
+ *
+ * @example
+ * ```ts
+ * const osa = parseOsa(html, "https://kacr.info/osas/10");
+ * console.log(osa.members);
+ * ```
+ */
 export function parseOsa(html: string, sourceUrl: string): Osa {
     const $ = loadHtml(html, sourceUrl);
     const name = cleanText($("h1").first().text());
@@ -94,7 +124,7 @@ export function parseOsa(html: string, sourceUrl: string): Osa {
     }
 
     const summaryMap = new Map<string, string>();
-    $("ol")
+    $(".summary")
         .first()
         .find("li")
         .each((_, element) => {
@@ -118,17 +148,25 @@ export function parseOsa(html: string, sourceUrl: string): Osa {
             : [];
 
     const addressHeading = $("h3:contains('Adresa')").first();
-    const addressItems = addressHeading.next("ol").find("li");
+    const addressItems = addressHeading.next(".summary").find("li");
     const addressMap = new Map<string, string>();
     addressItems.each((_, element) => {
         const itemText = cleanText($(element).text()) ?? "";
         const parts = itemText.split(":");
         const key = parts[0]?.trim();
         const value = parts.slice(1).join(":").trim();
-        if (key && value) {
+        if (key && value && value !== ".") {
             addressMap.set(key, value);
         }
     });
+    const websiteLink = $(".summary")
+        .first()
+        .find("a[href^='http']")
+        .filter((_, element) => {
+            const href = $(element).attr("href") ?? "";
+            return !href.includes("kacr.info") && !href.includes("mapy.cz");
+        })
+        .first();
 
     return {
         id: extractIdFromUrl(sourceUrl, "osas"),
@@ -137,14 +175,7 @@ export function parseOsa(html: string, sourceUrl: string): Osa {
             .first()
             .attr("href")
             ?.replace(/^mailto:/, ""),
-        website:
-            $("a[href^='http']")
-                .filter(
-                    (_, element) =>
-                        !($(element).attr("href") ?? "").includes("kacr.info"),
-                )
-                .first()
-                .attr("href") ?? undefined,
+        website: websiteLink.attr("href") ?? undefined,
         memberCount: parseInteger(
             summaryMap.get("Počet členů") ??
                 $("#container")

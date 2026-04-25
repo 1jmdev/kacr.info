@@ -12,6 +12,18 @@ import { parseBooleanYesNo } from "../utils/numbers.ts";
 import { cleanText, stripTrailingColon } from "../utils/text.ts";
 import { absoluteUrl, extractIdFromUrl } from "../utils/urls.ts";
 
+/**
+ * Parses a competition detail page.
+ *
+ * The result includes summary metadata, judges, contact details, optional map
+ * coordinates, and linked run references.
+ *
+ * @example
+ * ```ts
+ * const competition = parseCompetition(html, "https://kacr.info/competitions/12345");
+ * console.log(competition.runs);
+ * ```
+ */
 export function parseCompetition(html: string, sourceUrl: string): Competition {
     const $ = loadHtml(html, sourceUrl);
     const id = extractIdFromUrl(sourceUrl, "competitions");

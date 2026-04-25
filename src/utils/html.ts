@@ -22,6 +22,9 @@ import {
     maybeExtractIdFromUrl,
 } from "./urls.ts";
 
+/**
+ * Loads HTML into Cheerio and rejects blank documents.
+ */
 export function loadHtml(html: string, sourceUrl: string): cheerio.CheerioAPI {
     if (html.trim().length === 0) {
         throw new ParseError("Received empty HTML document", sourceUrl);
@@ -29,6 +32,9 @@ export function loadHtml(html: string, sourceUrl: string): cheerio.CheerioAPI {
     return cheerio.load(html);
 }
 
+/**
+ * Reads the standard `.summary` list into a key-value map.
+ */
 export function summaryMap($: cheerio.CheerioAPI): Map<string, string> {
     const entries = new Map<string, string>();
     $(".summary li").each((_, element) => {
@@ -42,6 +48,9 @@ export function summaryMap($: cheerio.CheerioAPI): Map<string, string> {
     return entries;
 }
 
+/**
+ * Parses a competition link into a typed lightweight competition reference.
+ */
 export function parseCompetitionRef(
     anchor: cheerio.Cheerio<AnyNode>,
 ): CompetitionRef {
@@ -64,6 +73,9 @@ export function parseCompetitionRef(
     };
 }
 
+/**
+ * Parses a run link into a typed run reference.
+ */
 export function parseRunRef(anchor: cheerio.Cheerio<AnyNode>): RunRef {
     const href = anchor.attr("href");
     if (!href) {
@@ -78,6 +90,9 @@ export function parseRunRef(anchor: cheerio.Cheerio<AnyNode>): RunRef {
     };
 }
 
+/**
+ * Parses a handler link into a typed handler reference.
+ */
 export function parseHandlerRef(anchor: cheerio.Cheerio<AnyNode>): HandlerRef {
     const href = anchor.attr("href");
     if (!href) {
@@ -91,6 +106,9 @@ export function parseHandlerRef(anchor: cheerio.Cheerio<AnyNode>): HandlerRef {
     };
 }
 
+/**
+ * Parses a dog link into a typed dog reference.
+ */
 export function parseDogRef(anchor: cheerio.Cheerio<AnyNode>): DogRef {
     const href = anchor.attr("href");
     if (!href) {
@@ -104,6 +122,9 @@ export function parseDogRef(anchor: cheerio.Cheerio<AnyNode>): DogRef {
     };
 }
 
+/**
+ * Parses a judge link into a typed judge reference.
+ */
 export function parseJudgeRef(anchor: cheerio.Cheerio<AnyNode>): JudgeRef {
     const href = anchor.attr("href");
     if (!href) {
@@ -120,6 +141,9 @@ export function parseJudgeRef(anchor: cheerio.Cheerio<AnyNode>): JudgeRef {
     };
 }
 
+/**
+ * Parses an OSA link into a typed OSA reference.
+ */
 export function parseOsaRef(anchor: cheerio.Cheerio<AnyNode>): OsaRef {
     const href = anchor.attr("href");
     if (!href) {
@@ -133,6 +157,9 @@ export function parseOsaRef(anchor: cheerio.Cheerio<AnyNode>): OsaRef {
     };
 }
 
+/**
+ * Parses a book link into a typed book reference.
+ */
 export function parseBookRef(link: cheerio.Cheerio<AnyNode>): BookRef {
     const href = link.attr("href");
     if (!href) {
@@ -147,6 +174,9 @@ export function parseBookRef(link: cheerio.Cheerio<AnyNode>): BookRef {
     };
 }
 
+/**
+ * Parses a KACR form rendered as a definition-list-like `<ol>` structure.
+ */
 export function parseDefinitionListForm(
     $: cheerio.CheerioAPI,
     formSelector: string,
@@ -206,6 +236,9 @@ export function parseDefinitionListForm(
     };
 }
 
+/**
+ * Extracts map coordinates embedded in inline JavaScript when present.
+ */
 export function extractMapCoordinates(html: string): {
     latitude?: number;
     longitude?: number;
@@ -222,6 +255,9 @@ export function extractMapCoordinates(html: string): {
     };
 }
 
+/**
+ * Returns normalized text for a grouped-results heading node.
+ */
 export function groupHeadingText(
     $: cheerio.CheerioAPI,
     element: AnyNode,
@@ -229,6 +265,9 @@ export function groupHeadingText(
     return cleanText($(element).text());
 }
 
+/**
+ * Parses compact result snippets used on handler, dog, and book pages.
+ */
 export function parseResultStats(raw: string): {
     rank?: number;
     total?: number;
@@ -262,6 +301,9 @@ export function parseResultStats(raw: string): {
     };
 }
 
+/**
+ * Removes duplicate objects by numeric `id`, keeping the first occurrence.
+ */
 export function dedupeById<T extends { id: number }>(items: T[]): T[] {
     const seen = new Set<number>();
     return items.filter((item) => {
@@ -273,6 +315,9 @@ export function dedupeById<T extends { id: number }>(items: T[]): T[] {
     });
 }
 
+/**
+ * Extracts a linked id when a string happens to contain a matching KACR URL.
+ */
 export function extractOptionalLinkedId(
     textOrHref: string | undefined,
     segment: string,

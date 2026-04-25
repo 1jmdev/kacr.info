@@ -4,7 +4,7 @@ import type { AnyNode } from "domhandler";
 import type { CompetitionRef, HomeData } from "../models/common.ts";
 import { loadHtml, parseCompetitionRef } from "../utils/html.ts";
 import { parseInteger } from "../utils/numbers.ts";
-import { cleanText } from "../utils/text.ts";
+import { cleanText, stripTrailingColon } from "../utils/text.ts";
 
 function collectSectionItems(
     container: CheerioAPI,
@@ -13,7 +13,9 @@ function collectSectionItems(
     const matchedHeading = container("h2, h3")
         .filter(
             (_, element: AnyNode) =>
-                cleanText(container(element).text()) === heading,
+                stripTrailingColon(
+                    cleanText(container(element).text()) ?? "",
+                ) === heading,
         )
         .first();
     if (matchedHeading.length === 0) {
@@ -27,6 +29,18 @@ function collectSectionItems(
         .map((element: AnyNode) => parseCompetitionRef(container(element)));
 }
 
+/**
+ * Parses the public homepage into featured competition sections.
+ *
+ * This parser is intentionally tolerant of empty homepage fixtures and returns
+ * empty sections instead of throwing when the input HTML is blank.
+ *
+ * @example
+ * ```ts
+ * const home = parseHome(html, "https://kacr.info/");
+ * console.log(home.todaysCompetitions);
+ * ```
+ */
 export function parseHome(html: string, sourceUrl: string): HomeData {
     if (html.trim().length === 0) {
         return {

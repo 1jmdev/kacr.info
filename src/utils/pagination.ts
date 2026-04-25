@@ -3,6 +3,9 @@ import type * as cheerio from "cheerio";
 import type { Pagination } from "../models/common.ts";
 import { cleanText } from "./text.ts";
 
+/**
+ * Parses the standard KACR pagination widget.
+ */
 export function parsePagination(
     $: cheerio.CheerioAPI,
     root = ".pagination",

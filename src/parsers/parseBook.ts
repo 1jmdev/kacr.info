@@ -61,6 +61,16 @@ function parseGroupedResults(
     return groups;
 }
 
+/**
+ * Parses a book page, including linked handler, linked dog, and grouped run
+ * results.
+ *
+ * @example
+ * ```ts
+ * const book = parseBook(html, "https://kacr.info/books/123");
+ * console.log(book.dog);
+ * ```
+ */
 export function parseBook(html: string, sourceUrl: string): Book {
     const $ = loadHtml(html, sourceUrl);
     const summary = summaryMap($);
